@@ -6,6 +6,10 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 contract DynamicNFT is ERC721 {
+    //errors
+    error DynamicNFT__NotOwnerOrApproved();
+
+    // storage
     uint256 private s_tokenCounter;
     string private s_happySvgImageUri;
     string private s_sadSvgImageUri;
@@ -30,6 +34,17 @@ contract DynamicNFT is ERC721 {
         _safeMint(msg.sender, s_tokenCounter);
         s_tokenIdToMood[s_tokenCounter] = MOOD.HAPPY;
         s_tokenCounter += 1;
+    }
+
+    function flipMood(uint256 tokenId) public {
+        if (msg.sender != ownerOf(tokenId) && msg.sender!=getApproved(tokenId)) {
+            revert DynamicNFT__NotOwnerOrApproved();
+        }
+        if (s_tokenIdToMood[tokenId] == MOOD.HAPPY) {
+            s_tokenIdToMood[tokenId] = MOOD.SAD;
+        } else {
+            s_tokenIdToMood[tokenId] = MOOD.HAPPY;
+        }
     }
 
     function _baseURI() internal pure override returns (string memory) {
