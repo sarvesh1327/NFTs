@@ -30,10 +30,11 @@ contract DynamicNFT is ERC721 {
         s_sadSvgImageUri = sadSvgImageUri;
     }
 
-    function mint() public {
+    function mint() public returns(uint256){
         _safeMint(msg.sender, s_tokenCounter);
         s_tokenIdToMood[s_tokenCounter] = MOOD.HAPPY;
         s_tokenCounter += 1;
+        return s_tokenCounter-1;
     }
 
     function flipMood(uint256 tokenId) public {
